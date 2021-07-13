@@ -5,6 +5,8 @@ import com.nagyrobi144.dogify.database.createDriver
 import com.nagyrobi144.dogify.db.DogifyDatabase
 import com.nagyrobi144.dogify.repository.BreedsLocalSource
 import com.nagyrobi144.dogify.repository.BreedsRemoteSource
+import com.nagyrobi144.dogify.repository.BreedsRepository
+import com.nagyrobi144.dogify.usecase.FetchBreedsUseCase
 import com.nagyrobi144.dogify.util.getDispatcherProvider
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
@@ -21,11 +23,14 @@ private val apiModule = module {
 }
 
 private val repositoryModule = module {
+    single { BreedsRepository(get(), get()) }
+
     factory { BreedsRemoteSource(get(), get()) }
     factory { BreedsLocalSource(get(), get()) }
 }
 
 private val useCaseModule = module {
+    factory { FetchBreedsUseCase(get()) }
 }
 
 private val commonModules =

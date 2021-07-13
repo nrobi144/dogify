@@ -4,7 +4,7 @@ package com.nagyrobi144.dogify.util
  * Wrapper class exposing a given data type of [T] to the UI layer from the Data layer(use-case, repository, source).
  * Can represent multiple states: [Success], [Partial] and [Error]
  */
-internal sealed class Result<out T> {
+sealed class Result<out T> {
     data class Success<out T>(val value: T) : Result<T>()
     data class Partial<out T>(val value: T) : Result<T>()
     data class Error<out T>(val exception: Throwable) : Result<T>()
@@ -25,17 +25,18 @@ internal sealed class Result<out T> {
          * [Result.Partial] if it's only partially successful, or
          * [Result.Error] in case of a known [Exception]
          */
-        suspend operator fun <T> invoke(function: suspend Context.() -> T): Result<T> = try {
-            with(Context()) {
-                val result = function(this)
-                if (isPartial) {
-                    Partial(result)
-                } else {
-                    Success(result)
+        internal suspend operator fun <T> invoke(function: suspend Context.() -> T): Result<T> =
+            try {
+                with(Context()) {
+                    val result = function(this)
+                    if (isPartial) {
+                        Partial(result)
+                    } else {
+                        Success(result)
+                    }
                 }
+            } catch (exception: Exception) {
+                Error(exception)
             }
-        } catch (exception: Exception) {
-            Error(exception)
-        }
     }
 }
