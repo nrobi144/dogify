@@ -25,7 +25,9 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.activity:activity-compose:1.3.0-rc01")
-    implementation("com.google.accompanist:accompanist-coil:0.13.0")
+    val accompanistVersion = "0.13.0"
+    implementation("com.google.accompanist:accompanist-coil:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-swiperefresh:$accompanistVersion")
     val koinVersion = "3.1.2"
     implementation("io.insert-koin:koin-androidx-compose:$koinVersion")
 }

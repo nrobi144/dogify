@@ -12,7 +12,13 @@ class BreedsRepository internal constructor(
 
     val breeds = localSource.breeds
 
-    suspend fun get() = localSource.selectAll().isNullOrEmpty() ?: fetch()
+    suspend fun get() = with(localSource.selectAll()) {
+        if (isNullOrEmpty()) {
+            return@with fetch()
+        } else {
+            this
+        }
+    }
 
     suspend fun fetch() = supervisorScope {
         remoteSource.getBreeds().map { breedName ->
@@ -24,6 +30,7 @@ class BreedsRepository internal constructor(
                 null
             }
         }.also { breeds ->
+            localSource.clear()
             breeds.mapNotNull { async { localSource.insert(it ?: return@async) } }.awaitAll()
         }
     }

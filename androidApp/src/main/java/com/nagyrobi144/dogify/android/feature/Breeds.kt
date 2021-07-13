@@ -39,7 +39,7 @@ fun Breeds(breeds: List<Breed>, onFavouriteTapped: (Breed) -> Unit = {}) {
                     contentScale = ContentScale.Crop
 
                 )
-                Row(Modifier.padding(top = 8.dp)) {
+                Row(Modifier.padding(vertical = 8.dp)) {
                     Text(
                         text = it.name,
                         modifier = Modifier

@@ -7,6 +7,7 @@ import com.nagyrobi144.dogify.repository.BreedsLocalSource
 import com.nagyrobi144.dogify.repository.BreedsRemoteSource
 import com.nagyrobi144.dogify.repository.BreedsRepository
 import com.nagyrobi144.dogify.usecase.FetchBreedsUseCase
+import com.nagyrobi144.dogify.usecase.GetBreedsUseCase
 import com.nagyrobi144.dogify.usecase.ToggleFavouriteStateUseCase
 import com.nagyrobi144.dogify.util.getDispatcherProvider
 import org.koin.core.context.startKoin
@@ -31,6 +32,7 @@ private val repositoryModule = module {
 }
 
 private val useCaseModule = module {
+    factory { GetBreedsUseCase(get()) }
     factory { FetchBreedsUseCase(get()) }
     factory { ToggleFavouriteStateUseCase(get()) }
 }
