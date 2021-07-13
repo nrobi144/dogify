@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             MaterialTheme {
-                HomeScreen(homeViewModel = homeViewModel)
+                HomeScreen(viewModel = homeViewModel)
             }
         }
     }
