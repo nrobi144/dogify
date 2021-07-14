@@ -27,11 +27,23 @@ class HomeViewModel(
     private val _events = MutableSharedFlow<Event>()
     val events: SharedFlow<Event> = _events
 
-    val breeds = breedsRepository.breeds.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(),
-        emptyList()
-    )
+    private val _shouldFilterFavourites = MutableStateFlow(false)
+    val shouldFilterFavourites: StateFlow<Boolean> = _shouldFilterFavourites
+
+    val breeds =
+        breedsRepository.breeds.combine(shouldFilterFavourites) { breeds, shouldFilterFavourites ->
+            if (shouldFilterFavourites) {
+                breeds.filter { it.isFavourite }
+            } else {
+                breeds
+            }.also {
+                _state.value = if (it.isEmpty()) State.EMPTY else State.NORMAL
+            }
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            emptyList()
+        )
 
     init {
         loadData()
@@ -62,6 +74,10 @@ class HomeViewModel(
 
     fun refresh() {
         loadData(true)
+    }
+
+    fun onToggleFavouriteFilter() {
+        _shouldFilterFavourites.value = !shouldFilterFavourites.value
     }
 
     fun onFavouriteTapped(breed: Breed) {

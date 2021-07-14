@@ -22,6 +22,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
     val breeds by viewModel.breeds.collectAsState()
     val events by viewModel.events.collectAsState(Unit)
     val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val shouldFilterFavourites by viewModel.shouldFilterFavourites.collectAsState()
 
     val scaffoldState = rememberScaffoldState()
     val snackbarCoroutineScope = rememberCoroutineScope()
@@ -32,29 +33,49 @@ fun HomeScreen(viewModel: HomeViewModel) {
             state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
             onRefresh = viewModel::refresh
         ) {
-            Box(
+            Column(
                 Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp)
+                    .padding(8.dp)
             ) {
-                when (state) {
-                    HomeViewModel.State.LOADING -> CircularProgressIndicator(
-                        Modifier.align(
-                            Alignment.Center
-                        )
+                Row(
+                    Modifier
+                        .wrapContentWidth(Alignment.End)
+                        .padding(8.dp)) {
+                    Text(text = "Filter favourites")
+                    Switch(
+                        checked = shouldFilterFavourites,
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        onCheckedChange = { viewModel.onToggleFavouriteFilter() }
                     )
+                }
+                when (state) {
+                    HomeViewModel.State.LOADING -> {
+                        Spacer(Modifier.weight(1f))
+                        CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
+                        Spacer(Modifier.weight(1f))
+                    }
                     HomeViewModel.State.NORMAL -> Breeds(
                         breeds = breeds,
                         onFavouriteTapped = viewModel::onFavouriteTapped
                     )
-                    HomeViewModel.State.ERROR -> Text(
-                        text = "Oops something went wrong...",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                    HomeViewModel.State.EMPTY -> Text(
-                        text = "Oops looks like there are no dogs...",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+
+                    HomeViewModel.State.ERROR -> {
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            text = "Oops something went wrong...",
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                        Spacer(Modifier.weight(1f))
+                    }
+                    HomeViewModel.State.EMPTY -> {
+                        Spacer(Modifier.weight(1f))
+                        Text(
+                            text = "Oops looks like there are no ${if (shouldFilterFavourites) "favourites" else "dogs"}",
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                        Spacer(Modifier.weight(1f))
+                    }
                 }
                 if (events == HomeViewModel.Event.Error) {
                     snackbarCoroutineScope.launch {
